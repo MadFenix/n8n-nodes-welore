@@ -444,6 +444,8 @@ export class WeLoreApi implements INodeType {
 					// No parameters provided, continue with empty body and query
 				}
 
+				console.log(request.method);
+				console.log(request.url);
 				// Prepare the request options
 				const options: IHttpRequestOptions = {
 					method: request.method as IHttpRequestMethods,
