@@ -255,6 +255,7 @@ export class WeLoreApi implements INodeType {
 		subtitle: '={{ $parameter["operation"] + ": " + $parameter["resource"] }}',
 		description: 'Interactúa con la API REST de weLore usando OpenAPI',
 		defaults: { name: 'weLore API Tool' },
+		usableAsTool: true,
 		inputs: [NodeConnectionType.Main],
 		outputs: [NodeConnectionType.Main],
 		credentials: [
