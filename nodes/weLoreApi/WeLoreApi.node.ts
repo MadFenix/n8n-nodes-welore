@@ -469,7 +469,7 @@ export class WeLoreApi implements INodeType {
 					returnData.push({ error: error.message });
 					continue;
 				}
-				throw error instanceof Error ? error : new Error(String(error));
+				throw error instanceof Error ? error : new Error(String(error + JSON.stringify(request)));
 			}
 		}
 
