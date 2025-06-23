@@ -1,6 +1,6 @@
 {
   "name": "n8n-nodes-welore",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "description": "Node to access weLore Api.",
   "keywords": [
     "n8n-community-node-package",
@@ -51,10 +51,12 @@
     "path": "^0.12.7",
     "prettier": "^3.5.3",
     "typescript": "^5.8.3",
-    "url": "^0.11.4",
-    "yaml": "^2.8.0"
+    "url": "^0.11.4"
   },
   "peerDependencies": {
     "n8n-workflow": "*"
+  },
+  "dependencies": {
+    "yaml": "^2.8.0"
   }
 }
