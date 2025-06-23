@@ -335,10 +335,10 @@ export class WeLoreApi implements INodeType {
 							},
 							{
 								displayName: 'Value',
-								name: 'value',
+								name: '={{$parameter["name"]}}',
 								type: 'string',
 								default: '',
-								description: 'Value of the parameter',
+								description: 'Value of the parameter ={{$parameter["name"]}}',
 							},
 						],
 					},
@@ -418,14 +418,17 @@ export class WeLoreApi implements INodeType {
 
 				// Get parameters from the fixedCollection
 				try {
-					const parameters = this.getNodeParameter('parameters.parameter', i, []) as Array<{
+					interface DynamicParameter {
 						name: string;
-						value: string;
-					}>;
+						[key: string]: string;  // Permite acceso dinámico a cualquier propiedad string
+					}
+
+					const parameters:DynamicParameter[] = this.getNodeParameter('parameters.parameter', i, []) as Array<DynamicParameter>;
 
 					// Process each parameter
 					for (const param of parameters) {
-						const { name, value } = param;
+						const { name } = param;
+						const value = param[param.name];
 
 						// Find the property definition for this parameter
 						const propertyDef = properties.find(p => p.name === name);
