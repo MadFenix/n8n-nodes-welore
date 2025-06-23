@@ -10,9 +10,8 @@ import {
 	INodePropertyOptions,
 	INodeProperties,
 } from 'n8n-workflow';
-
-// OpenAPI schema URL
-const OPENAPI_URL = 'https://api-weafinity.madfenix.com/docs.openapi';
+import * as fs from 'fs';
+import { parse as yamlParse } from 'yaml';
 
 // Interface for OpenAPI schema
 interface IOpenApiSchema {
@@ -68,16 +67,13 @@ async function fetchOpenApiSchema(this: ILoadOptionsFunctions | IExecuteFunction
 	}
 
 	try {
-		const response = await this.helpers.httpRequest({
-			method: 'GET',
-			url: OPENAPI_URL,
-			json: true,
-		});
+		const schemaContent = fs.readFileSync('nodes/weLoreApi/docs.openapi', 'utf-8');
+		const response = yamlParse(schemaContent);
 
 		openApiSchemaCache = response;
 		return response;
 	} catch (error) {
-		throw new ApplicationError(`Failed to fetch OpenAPI schema: ${error instanceof Error ? error.message : String(error)}`);
+		throw new ApplicationError(`Failed to load OpenAPI schema from file: ${error instanceof Error ? error.message : String(error)}`);
 	}
 }
 
