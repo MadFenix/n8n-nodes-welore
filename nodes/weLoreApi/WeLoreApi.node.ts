@@ -67,7 +67,7 @@ async function fetchOpenApiSchema(this: ILoadOptionsFunctions | IExecuteFunction
 	}
 
 	try {
-		const schemaContent = fs.readFileSync('nodes/weLoreApi/docs.openapi', 'utf-8');
+		const schemaContent = fs.readFileSync('nodes/weLoreApi/docs.openapi.yaml', 'utf-8');
 		const response = yamlParse(schemaContent);
 
 		openApiSchemaCache = response;
