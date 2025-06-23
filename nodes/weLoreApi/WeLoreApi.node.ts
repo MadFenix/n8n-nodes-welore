@@ -442,6 +442,7 @@ export class WeLoreApi implements INodeType {
 				} catch (error) {
 					// No parameters provided, continue with empty body and query
 				}
+				const credentials = await this.getCredentials('weLoreApi');
 
 				this.logger.debug(request.method);
 				this.logger.debug(request.url);
@@ -452,6 +453,10 @@ export class WeLoreApi implements INodeType {
 					body: Object.keys(body).length > 0 ? body : undefined,
 					qs: Object.keys(queryParameters).length > 0 ? queryParameters : undefined,
 					json: true,
+					headers: {
+						'Authorization': `Bearer ${credentials.token}`,
+						'Content-Type': 'application/json',
+					},
 				};
 				// throw new ApplicationError(String(JSON.stringify(request)));
 				// Execute the request
