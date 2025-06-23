@@ -5,7 +5,7 @@ import {
 } from 'n8n-workflow';
 
 export class WeLoreApi implements ICredentialType {
-	name = 'weLoreCredentialsApi';
+	name = 'weLoreApi';
 	displayName = 'weLore API';
 	documentationUrl = 'https://api-weafinity.madfenix.com/docs';
 	properties: INodeProperties[] = [

@@ -193,6 +193,7 @@ async function resolveMapping(
 	this: ILoadOptionsFunctions | IExecuteFunctions,
 	resource: string,
 	operationId: string,
+	account: string,
 ): Promise<{ request: any; properties: INodeProperties[] }> {
 	try {
 		const schema = await fetchOpenApiSchema.call(this);
@@ -221,6 +222,7 @@ async function resolveMapping(
 		const endpoint = schema.paths[path][method];
 
 		if (endpoint.parameters) {
+			processedUrl = processedUrl.replace(`{acccount}`, account);
 			for (const param of endpoint.parameters) {
 				if (param.in === 'path') {
 					processedUrl = processedUrl.replace(`{${param.name}}`, `{{$parameter.${param.name}}}`);
@@ -262,6 +264,14 @@ export class WeLoreApi implements INodeType {
 			},
 		},
 		properties: [
+			{
+				displayName: 'Account Name',
+				name: 'account',
+				type: 'string',
+				required: true,
+				default: 'host',
+				description: 'The name of the account',
+			},
 			{
 				displayName: 'Resource Name or ID',
 				name: 'resource',
@@ -355,6 +365,7 @@ export class WeLoreApi implements INodeType {
 				this: ILoadOptionsFunctions
 			): Promise<INodePropertyOptions[]> {
 				try {
+					const account = this.getCurrentNodeParameter('account') as string;
 					const resource = this.getCurrentNodeParameter('resource') as string;
 					const operation = this.getCurrentNodeParameter('operation') as string;
 
@@ -362,7 +373,7 @@ export class WeLoreApi implements INodeType {
 						return [];
 					}
 
-					const { properties } = await resolveMapping.call(this, resource, operation);
+					const { properties } = await resolveMapping.call(this, resource, operation, account);
 
 					// Convert properties to options format
 					return properties.map(property => ({
@@ -381,11 +392,12 @@ export class WeLoreApi implements INodeType {
 		const items = this.getInputData();
 		const returnData: any[] = [];
 
+		const account = this.getNodeParameter('account', 0) as string;
 		const resource = this.getNodeParameter('resource', 0) as string;
 		const operation = this.getNodeParameter('operation', 0) as string;
 
 		// Get the dynamic properties and request options for this resource and operation
-		const { request, properties } = await resolveMapping.call(this, resource, operation);
+		const { request, properties } = await resolveMapping.call(this, resource, operation, account);
 
 		for (let i = 0; i < items.length; i++) {
 			try {
