@@ -86,8 +86,13 @@ function extractResources(schema: IOpenApiSchema): INodePropertyOptions[] {
 	for (const path in schema.paths) {
 		const pathParts = path.split('/').filter(Boolean);
 		if (pathParts.length > 2) {
-			const resource = pathParts[2];
-			resources[resource] = resource;
+			if (pathParts[2] == 'manager' && pathParts.length > 3) {
+				const resource = pathParts[3];
+				resources[resource] = resource;
+			} else {
+				const resource = pathParts[2];
+				resources[resource] = resource;
+			}
 		}
 	}
 
@@ -104,7 +109,7 @@ function extractOperations(schema: IOpenApiSchema, resource: string): INodePrope
 
 	// Find all paths that start with the resource
 	for (const path in schema.paths) {
-		if (path.startsWith(`/api/{account}/${resource}`) || path.startsWith(`/api/{account}/${resource}/`)) {
+		if (path.startsWith(`/api/{account}/${resource}`) || path.startsWith(`/api/{account}/manager/${resource}`)) {
 			for (const method in schema.paths[path]) {
 				const endpoint = schema.paths[path][method];
 				const operationId = endpoint.operationId || `${method}${path.replace(/\//g, '_')}`;
