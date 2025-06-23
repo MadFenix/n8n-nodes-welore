@@ -194,7 +194,7 @@ async function resolveMapping(
 	resource: string,
 	operationId: string,
 	account: string,
-	id: number|null = null,
+	idresource: number|null = null,
 ): Promise<{ request: any; properties: INodeProperties[] }> {
 	try {
 		const schema = await fetchOpenApiSchema.call(this);
@@ -223,8 +223,8 @@ async function resolveMapping(
 		const endpoint = schema.paths[path][method];
 
 		processedUrl = processedUrl.replace('{account}', account);
-		if (id) {
-			processedUrl = processedUrl.replace('{id}', id);
+		if (idresource) {
+			processedUrl = processedUrl.replace('{id}', idresource);
 		}
 		if (endpoint.parameters) {
 			for (const param of endpoint.parameters) {
@@ -277,7 +277,7 @@ export class WeLoreApi implements INodeType {
 			},
 			{
 				displayName: 'Resource ID',
-				name: 'id',
+				name: 'idresource',
 				type: 'number',
 				default: null,
 			},
@@ -374,7 +374,7 @@ export class WeLoreApi implements INodeType {
 				this: ILoadOptionsFunctions
 			): Promise<INodePropertyOptions[]> {
 				try {
-					const id = this.getCurrentNodeParameter('id') as number|null;
+					const idresource = this.getCurrentNodeParameter('idresource') as number|null;
 					const account = this.getCurrentNodeParameter('account') as string;
 					const resource = this.getCurrentNodeParameter('resource') as string;
 					const operation = this.getCurrentNodeParameter('operation') as string;
@@ -383,7 +383,7 @@ export class WeLoreApi implements INodeType {
 						return [];
 					}
 
-					const { properties } = await resolveMapping.call(this, resource, operation, account, id);
+					const { properties } = await resolveMapping.call(this, resource, operation, account, idresource);
 
 					// Convert properties to options format
 					return properties.map(property => ({
