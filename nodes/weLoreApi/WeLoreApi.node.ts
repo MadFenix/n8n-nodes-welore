@@ -221,7 +221,7 @@ async function resolveMapping(
 		let processedUrl = path;
 		const endpoint = schema.paths[path][method];
 
-		processedUrl = processedUrl.replace(`{acccount}`, account);
+		processedUrl = processedUrl.replace('{account}', account);
 		if (endpoint.parameters) {
 			for (const param of endpoint.parameters) {
 				if (param.in === 'path') {
