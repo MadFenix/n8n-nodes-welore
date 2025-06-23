@@ -465,16 +465,15 @@ export class WeLoreApi implements INodeType {
 					options
 				);
 
-				// Verifica si la respuesta es un array
+				// Transformar la respuesta al formato esperado por n8n
+				let processedData;
 				if (Array.isArray(responseData)) {
-					returnData.push(...responseData);
-				} else if (responseData.data && Array.isArray(responseData.data)) {
-					// Si la respuesta tiene una propiedad 'data' que es un array
-					returnData.push(...responseData.data);
+					processedData = responseData.map(item => ({ json: item }));
 				} else {
-					// Si es un objeto simple
-					returnData.push(responseData);
+					processedData = [{ json: responseData }];
 				}
+
+				returnData.push(...processedData);
 			} catch (error) {
 				if (this.continueOnFail()) {
 					returnData.push({ error: error.message });
