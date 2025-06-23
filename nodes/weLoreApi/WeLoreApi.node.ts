@@ -257,7 +257,6 @@ export class WeLoreApi implements INodeType {
 			{ name: 'weLoreApi', required: true },
 		],
 		requestDefaults: {
-			baseURL: '={{$credentials.baseUrl}}',
 			headers: {
 				Authorization: 'Bearer {{$credentials.token}}',
 				'Content-Type': 'application/json',

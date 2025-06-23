@@ -10,13 +10,6 @@ export class WeLoreApi implements ICredentialType {
 	documentationUrl = 'https://api-weafinity.madfenix.com/docs';
 	properties: INodeProperties[] = [
 		{
-			displayName: 'Base URL',
-			name: 'baseUrl',
-			type: 'string',
-			default: '',
-			placeholder: 'https://api-weafinity.madfenix.com/api',
-		},
-		{
 			displayName: 'Token',
 			name: 'token',
 			type: 'string',
