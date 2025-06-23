@@ -469,10 +469,12 @@ export class WeLoreApi implements INodeType {
 				let processedData;
 				if (Array.isArray(responseData)) {
 					processedData = responseData.map(item => ({ json: item }));
+				} else if (responseData.data && Array.isArray(responseData.data)) {
+					processedData = responseData.data.map((item:any) => ({ json: item }));
 				} else {
 					processedData = [{ json: responseData }];
 				}
-				throw new ApplicationError(String(JSON.stringify(processedData)));
+
 				returnData.push(...processedData);
 			} catch (error) {
 				if (this.continueOnFail()) {
