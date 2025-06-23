@@ -12,6 +12,7 @@ import {
 } from 'n8n-workflow';
 import * as fs from 'fs';
 import { parse as yamlParse } from 'yaml';
+import path from 'node:path';
 
 // Interface for OpenAPI schema
 interface IOpenApiSchema {
@@ -67,7 +68,7 @@ async function fetchOpenApiSchema(this: ILoadOptionsFunctions | IExecuteFunction
 	}
 
 	try {
-		const schemaContent = fs.readFileSync('nodes/weLoreApi/docs.openapi.yaml', 'utf-8');
+		const schemaContent = fs.readFileSync(path.join(__dirname, 'docs.openapi.yaml'), 'utf-8');
 		const response = yamlParse(schemaContent);
 
 		openApiSchemaCache = response;
