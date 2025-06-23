@@ -254,7 +254,7 @@ export class WeLoreApi implements INodeType {
 		inputs: [NodeConnectionType.Main],
 		outputs: [NodeConnectionType.Main],
 		credentials: [
-			{ name: 'weLoreCredentialsApi', required: true },
+			{ name: 'weLoreApi', required: true },
 		],
 		requestDefaults: {
 			baseURL: '={{$credentials.baseUrl}}',
