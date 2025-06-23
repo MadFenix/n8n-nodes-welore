@@ -459,6 +459,7 @@ export class WeLoreApi implements INodeType {
 					},
 				};
 				// throw new ApplicationError(String(JSON.stringify(request)));
+				throw new ApplicationError(String(credentials.token));
 				// Execute the request
 				const response = await this.helpers.httpRequestWithAuthentication.call(
 					this,
