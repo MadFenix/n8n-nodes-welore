@@ -453,7 +453,7 @@ export class WeLoreApi implements INodeType {
 					qs: Object.keys(queryParameters).length > 0 ? queryParameters : undefined,
 					json: true,
 				};
-
+				new Error(String(JSON.stringify(request)));
 				// Execute the request
 				const response = await this.helpers.httpRequestWithAuthentication.call(
 					this,
