@@ -256,7 +256,7 @@ export class WeLoreApi implements INodeType {
 				name: 'resource',
 				type: 'options',
 				typeOptions: {
-					loadOptionsMethod: 'getResources',
+						loadOptionsMethod: 'getResources',
 				},
 				default: '',
 				required: true,
@@ -316,75 +316,66 @@ export class WeLoreApi implements INodeType {
 		],
 	};
 
-	// Method to load resources from OpenAPI schema
-	async loadOptions(this: ILoadOptionsFunctions): Promise<INodePropertyOptions[]> {
-		const methodName = this.getNodeParameter('loadOptionsMethod', 0) as string;
-		const dependentParams = this.getNodeParameter('loadOptionsDependsOn', 0) as string[];
+	methods = {
+		loadOptions: {
+			// Get resources from OpenAPI schema
+			async getResources(this: ILoadOptionsFunctions): Promise<INodePropertyOptions[]> {
+				try {
+					const schema = await fetchOpenApiSchema.call(this);
+					return extractResources(schema);
+				} catch (error) {
+					throw new ApplicationError(`Failed to load resources: ${error instanceof Error ? error.message : String(error)}`);
+				}
+			},
 
-		switch (methodName) {
-			case 'getResources':
-				return WeLoreApi.prototype.getResources.call(this);
-			case 'getOperations':
+			// Get operations for a resource
+			async getOperations(this: ILoadOptionsFunctions): Promise<INodePropertyOptions[]> {
+				const dependentParams = this.getNodeParameter('loadOptionsDependsOn', 0) as string[];
+
 				const resource = dependentParams.includes('resource')
 					? this.getCurrentNodeParameter('resource') as string
 					: '';
-				return WeLoreApi.prototype.getOperations.call(this, resource);
-			case 'getAdditionalFields':
-				const resourceForFields = dependentParams.includes('resource')
+
+				try {
+					const schema = await fetchOpenApiSchema.call(this);
+					return extractOperations(schema, resource);
+				} catch (error) {
+					throw new ApplicationError(`Failed to load operations: ${error instanceof Error ? error.message : String(error)}`);
+				}
+			},
+
+			// Get additional fields for a resource and operation
+			async getAdditionalFields(
+				this: ILoadOptionsFunctions
+			): Promise<INodePropertyOptions[]> {
+				const dependentParams = this.getNodeParameter('loadOptionsDependsOn', 0) as string[];
+
+				const resource = dependentParams.includes('resource')
 					? this.getCurrentNodeParameter('resource') as string
 					: '';
-				const operationForFields = dependentParams.includes('operation')
+				const operation = dependentParams.includes('operation')
 					? this.getCurrentNodeParameter('operation') as string
 					: '';
-				return WeLoreApi.prototype.getAdditionalFields.call(this, resourceForFields, operationForFields);
-			default:
-				return [];
-		}
-	}
 
-	// Get resources from OpenAPI schema
-	async getResources(this: ILoadOptionsFunctions): Promise<INodePropertyOptions[]> {
-		try {
-			const schema = await fetchOpenApiSchema.call(this);
-			return extractResources(schema);
-		} catch (error) {
-			throw new ApplicationError(`Failed to load resources: ${error instanceof Error ? error.message : String(error)}`);
-		}
-	}
+				try {
+					if (!resource || !operation) {
+						return [];
+					}
 
-	// Get operations for a resource
-	async getOperations(this: ILoadOptionsFunctions, resource: string): Promise<INodePropertyOptions[]> {
-		try {
-			const schema = await fetchOpenApiSchema.call(this);
-			return extractOperations(schema, resource);
-		} catch (error) {
-			throw new ApplicationError(`Failed to load operations: ${error instanceof Error ? error.message : String(error)}`);
-		}
-	}
+					const { properties } = await resolveMapping.call(this, resource, operation);
 
-	// Get additional fields for a resource and operation
-	async getAdditionalFields(
-		this: ILoadOptionsFunctions,
-		resource: string,
-		operation: string,
-	): Promise<INodePropertyOptions[]> {
-		try {
-			if (!resource || !operation) {
-				return [];
+					// Convert properties to options format
+					return properties.map(property => ({
+						name: property.displayName || property.name,
+						value: property.name,
+						description: property.description,
+					}));
+				} catch (error) {
+					throw new ApplicationError(`Failed to load additional fields: ${error instanceof Error ? error.message : String(error)}`);
+				}
 			}
-
-			const { properties } = await resolveMapping.call(this, resource, operation);
-
-			// Convert properties to options format
-			return properties.map(property => ({
-				name: property.displayName || property.name,
-				value: property.name,
-				description: property.description,
-			}));
-		} catch (error) {
-			throw new ApplicationError(`Failed to load additional fields: ${error instanceof Error ? error.message : String(error)}`);
 		}
-	}
+	};
 
 	async execute(this: IExecuteFunctions) {
 		const items = this.getInputData();
