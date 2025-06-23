@@ -465,7 +465,16 @@ export class WeLoreApi implements INodeType {
 					options
 				);
 
-				returnData.push(responseData);
+				// Verifica si la respuesta es un array
+				if (Array.isArray(responseData)) {
+					returnData.push(...responseData);
+				} else if (responseData.data && Array.isArray(responseData.data)) {
+					// Si la respuesta tiene una propiedad 'data' que es un array
+					returnData.push(...responseData.data);
+				} else {
+					// Si es un objeto simple
+					returnData.push(responseData);
+				}
 			} catch (error) {
 				if (this.continueOnFail()) {
 					returnData.push({ error: error.message });
