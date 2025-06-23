@@ -230,7 +230,7 @@ async function resolveMapping(
 			}
 		}
 
-		request.url = processedUrl;
+		request.url = 'https://api-weafinity.madfenix.com' + processedUrl;
 
 		return {
 			request,
