@@ -81,6 +81,7 @@ async function fetchOpenApiSchema(this: ILoadOptionsFunctions | IExecuteFunction
 // Function to extract resources from OpenAPI schema
 function extractResources(schema: IOpenApiSchema): INodePropertyOptions[] {
 	const resources: { [key: string]: string } = {};
+	const excludedSuffixes = ['download', 'fields', 'upload'];
 
 	// Group paths by resource
 	for (const path in schema.paths) {
@@ -88,10 +89,14 @@ function extractResources(schema: IOpenApiSchema): INodePropertyOptions[] {
 		if (pathParts.length > 2) {
 			if (pathParts[2] == 'manager' && pathParts.length > 3) {
 				const resource = pathParts[3];
-				resources[resource] = resource;
+				if (resource && !excludedSuffixes.some(suffix => resource.endsWith(suffix))) {
+					resources[resource] = resource;
+				}
 			} else {
 				const resource = pathParts[2];
-				resources[resource] = resource;
+				if (resource && !excludedSuffixes.some(suffix => resource.endsWith(suffix))) {
+					resources[resource] = resource;
+				}
 			}
 		}
 	}
