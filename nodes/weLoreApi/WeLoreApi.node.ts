@@ -85,8 +85,8 @@ function extractResources(schema: IOpenApiSchema): INodePropertyOptions[] {
 	// Group paths by resource
 	for (const path in schema.paths) {
 		const pathParts = path.split('/').filter(Boolean);
-		if (pathParts.length > 0) {
-			const resource = pathParts[0];
+		if (pathParts.length > 2) {
+			const resource = pathParts[2];
 			resources[resource] = resource;
 		}
 	}
@@ -331,13 +331,8 @@ export class WeLoreApi implements INodeType {
 
 			// Get operations for a resource
 			async getOperations(this: ILoadOptionsFunctions): Promise<INodePropertyOptions[]> {
-				const dependentParams = this.getNodeParameter('loadOptionsDependsOn', 0) as string[];
-
-				const resource = dependentParams.includes('resource')
-					? this.getCurrentNodeParameter('resource') as string
-					: '';
-
 				try {
+					const resource = this.getCurrentNodeParameter('resource') as string;
 					const schema = await fetchOpenApiSchema.call(this);
 					return extractOperations(schema, resource);
 				} catch (error) {
@@ -349,16 +344,10 @@ export class WeLoreApi implements INodeType {
 			async getAdditionalFields(
 				this: ILoadOptionsFunctions
 			): Promise<INodePropertyOptions[]> {
-				const dependentParams = this.getNodeParameter('loadOptionsDependsOn', 0) as string[];
-
-				const resource = dependentParams.includes('resource')
-					? this.getCurrentNodeParameter('resource') as string
-					: '';
-				const operation = dependentParams.includes('operation')
-					? this.getCurrentNodeParameter('operation') as string
-					: '';
-
 				try {
+					const resource = this.getCurrentNodeParameter('resource') as string;
+					const operation = this.getCurrentNodeParameter('operation') as string;
+
 					if (!resource || !operation) {
 						return [];
 					}
