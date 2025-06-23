@@ -104,7 +104,7 @@ function extractOperations(schema: IOpenApiSchema, resource: string): INodePrope
 
 	// Find all paths that start with the resource
 	for (const path in schema.paths) {
-		if (path.startsWith(`/${resource}`) || path.startsWith(`/${resource}/`)) {
+		if (path.startsWith(`/api/{account}/${resource}`) || path.startsWith(`/api/{account}/${resource}/`)) {
 			for (const method in schema.paths[path]) {
 				const endpoint = schema.paths[path][method];
 				const operationId = endpoint.operationId || `${method}${path.replace(/\//g, '_')}`;
