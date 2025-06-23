@@ -8,7 +8,7 @@ import {
 	IHttpRequestMethods,
 	ILoadOptionsFunctions,
 	INodePropertyOptions,
-	INodeProperties,
+	INodeProperties, INodeExecutionData, IDataObject,
 } from 'n8n-workflow';
 import * as fs from 'fs';
 import { parse as yamlParse } from 'yaml';
@@ -387,9 +387,9 @@ export class WeLoreApi implements INodeType {
 		}
 	};
 
-	async execute(this: IExecuteFunctions) {
+	async execute(this: IExecuteFunctions): Promise<INodeExecutionData[][]> {
 		const items = this.getInputData();
-		const returnData: any[] = [];
+		const returnData: INodeExecutionData[] = [];
 
 		const account = this.getNodeParameter('account', 0) as string;
 		const resource = this.getNodeParameter('resource', 0) as string;
@@ -465,26 +465,25 @@ export class WeLoreApi implements INodeType {
 					options
 				);
 
-				// Transformar la respuesta al formato esperado por n8n
-				let processedData;
-				if (Array.isArray(responseData)) {
-					processedData = responseData.map(item => ({ json: item }));
-				} else if (responseData.data && Array.isArray(responseData.data)) {
-					processedData = responseData.data.map((item:any) => ({ json: item }));
-				} else {
-					processedData = [{ json: responseData }];
-				}
+				const executionData = this.helpers.constructExecutionMetaData(
+					this.helpers.returnJsonArray(responseData as IDataObject[]),
+					{ itemData: { item: i } },
+				);
 
-				returnData.push(...processedData);
+				returnData.push(...executionData);
 			} catch (error) {
 				if (this.continueOnFail()) {
-					returnData.push({ error: error.message });
+					const executionErrorData = this.helpers.constructExecutionMetaData(
+						this.helpers.returnJsonArray({ error: error.message }),
+						{ itemData: { item: i } },
+					);
+					returnData.push(...executionErrorData);
 					continue;
 				}
 				throw error instanceof Error ? error : new Error(String(error + JSON.stringify(request)));
 			}
 		}
 
-		return returnData;
+		return [returnData];
 	}
 }
