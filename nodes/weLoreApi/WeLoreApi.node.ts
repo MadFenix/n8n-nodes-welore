@@ -472,7 +472,7 @@ export class WeLoreApi implements INodeType {
 				} else {
 					processedData = [{ json: responseData }];
 				}
-
+				throw new ApplicationError(String(JSON.stringify(processedData)));
 				returnData.push(...processedData);
 			} catch (error) {
 				if (this.continueOnFail()) {
