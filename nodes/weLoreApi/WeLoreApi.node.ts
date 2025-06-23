@@ -236,6 +236,7 @@ export class WeLoreApi implements INodeType {
 	description: INodeTypeDescription = {
 		displayName: 'weLore API',
 		name: 'weLoreApi',
+		icon: 'file:welorenode.svg',
 		group: ['transform'],
 		version: 1,
 		subtitle: '={{ $parameter["operation"] + ": " + $parameter["resource"] }}',
