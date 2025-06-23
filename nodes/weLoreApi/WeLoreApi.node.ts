@@ -460,13 +460,11 @@ export class WeLoreApi implements INodeType {
 				};
 				// throw new ApplicationError(String(JSON.stringify(request)));
 				// Execute the request
-				const response = await this.helpers.httpRequest.call(
+				const responseData = await this.helpers.httpRequest.call(
 					this,
 					options
 				);
 
-				// Process the response
-				const responseData = await response.json();
 				returnData.push(responseData);
 			} catch (error) {
 				if (this.continueOnFail()) {
